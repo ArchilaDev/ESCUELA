@@ -2,47 +2,46 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Listado de Estudiantes</h2>
-    <a href="index.php?c=estudiante&a=crear" class="btn btn-success">Nuevo Estudiante</a>
+    <a href="<?= url('estudiantes', 'formulario') ?>" class="btn btn-primary">Nuevo Estudiante</a>
 </div>
 
-<div class="table-responsive">
-    <table class="table table-striped table-hover shadow-sm">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Email</th>
-                <th>Edad</th>
-                <th>País</th>
-                <th>Idioma</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (!empty($estudiantes)): ?>
-                <?php foreach ($estudiantes as $e): ?>
-                    <tr>
-                        <td><?= $e['id_estudiante'] ?></td>
-                        <td><?= htmlspecialchars($e['nombre_estudiante']) ?></td>
-                        <td><?= htmlspecialchars($e['apellido_estudiante'] ?? '') ?></td>
-                        <td><?= htmlspecialchars($e['email_estudiante']) ?></td>
-                        <td><?= $e['edad_estudiante'] ?></td>
-                        <td><?= htmlspecialchars($e['pais_estudiante'] ?? '') ?></td>
-                        <td><?= htmlspecialchars($e['idioma_estudiante']) ?></td>
-                        <td>
-                            <a href="index.php?c=estudiante&a=editar&id=<?= $e['id_estudiante'] ?>" class="btn btn-sm btn-warning">Editar</a>
-                            <a href="index.php?c=estudiante&a=eliminar&id=<?= $e['id_estudiante'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar este estudiante?')">Eliminar</a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
+<?php if (!empty($_SESSION['mensaje'])): ?>
+    <div class="alert alert-<?= $_SESSION['mensaje_tipo'] === 'peligro' ? 'danger' : 'success' ?> alert-dismissible fade show">
+        <?= h($_SESSION['mensaje']) ?>
+        <?php unset($_SESSION['mensaje'], $_SESSION['mensaje_tipo']); ?>
+    </div>
+<?php endif; ?>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (!empty($estudiantes)): ?>
+            <?php foreach ($estudiantes as $e): ?>
                 <tr>
-                    <td colspan="8" class="text-center">No hay estudiantes registrados.</td>
+                    <td><?= h($e['id_estudiante']) ?></td>
+                    <td><?= h($e['nombre']) ?></td>
+                    <td><?= h($e['apellido']) ?></td>
+                    <td><?= h($e['email']) ?></td>
+                    <td>
+                        <a href="<?= url('estudiantes', 'formulario', ['id' => $e['id_estudiante']]) ?>" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="<?= url('estudiantes', 'eliminar', ['id' => $e['id_estudiante']]) ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Desea eliminar este estudiante?')">Eliminar</a>
+                    </td>
                 </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-</div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="5" class="text-center">No hay estudiantes registrados.</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
 
 <?php require_once __DIR__ . '/../layout_footer.php'; ?>

@@ -1,26 +1,45 @@
 <?php
-require_once __DIR__ . '/helpers.php';
+    /* Punto de entrada único (patrón front controller) 
+    todas las URLS se ven así: index.php?c=controladores&a=acciones
+    ejemp: index.php?c=mascotas&a=formulario&id=3
+    */
 
-$controlador = $_GET['c'] ?? 'estudiante';
-$accion = $_GET['a'] ?? 'index';
+    //validar si hay sesiones activas
+    session_start();
+    //requerir la rutas
+    require_once __DIR__ . '/helpers.php';
 
-$controladorNombre = ucfirst($controlador) . 'Controller';
-$archivoControlador = __DIR__ . '/controllers/' . $controladorNombre . '.php';
+    //Alias de URL => nombre de la clase controladora
+    $controladores =[
+        'estudiantes' => 'EstudianteController',
+        'cursos'      => 'CursoController',
+        'auth'        => 'AuthController',
+    ];
 
-if (file_exists($archivoControlador)) {
-    require_once $archivoControlador;
-    
-    if (class_exists($controladorNombre)) {
-        $instancia = new $controladorNombre();
-        
-        if (method_exists($instancia, $accion)) {
-            $instancia->$accion();
-        } else {
-            echo "La acción no existe.";
-        }
-    } else {
-        echo "La clase del controlador no existe.";
+    //llamado a los controladores
+    $controlador = $_GET['c'] ?? 'estudiantes';
+    $accion = $_GET['a'] ?? 'index';
+
+    //validamos comunicaciones
+    if(!isset($controladores[$controlador])){
+        http_response_code(404);
+        exit('Página no encontrada.');
     }
-} else {
-    echo "El controlador no existe.";
-}
+
+    //validar la sesión todo pide sesión inicia, excepto el propio login
+    if($controlador !== 'auth'){
+        exigir_login();
+    }
+
+    $clase = $controladores[$controlador];
+    require_once __DIR__ . "/controllers/$clase.php";
+
+    $objeto = new $clase();
+
+    if(!method_exists($objeto, $accion)){
+        http_response_code(404);
+        exit("Acción no encontrada.");
+    }
+
+    $objeto -> $accion();
+?>

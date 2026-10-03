@@ -1,47 +1,54 @@
 <?php
 require_once __DIR__ . '/../models/mdlProfesor.php';
 
-class AuthController {
-    private $modeloProfesor;
+//objeto
+class AuthController{
+    //atributos
+    private mdlProfesor $usuario;
 
-    public function __construct() {
-        $this->modeloProfesor = new mdlProfesor();
+    //constructor
+    public function __construct()
+    {
+      //instanciar el modelo
+      $this -> usuario = new mdlProfesor();
     }
 
-    public function login() {
-        if (estaAutenticado()) {
-            redireccionar('estudiante', 'index');
+    //GET index.php?c=auth -> formulario del login
+    public function index():void{
+        if(!empty($_SESSION['usuario_id'])){
+            redirigir('estudiantes');
         }
-
         $error = '';
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $email = trim($_POST['email'] ?? '');
-            $clave = trim($_POST['clave'] ?? '');
-
-            if (!empty($email) && !empty($clave)) {
-                $profesor = $this->modeloProfesor->obtenerPorEmail($email);
-
-                if ($profesor && password_verify($clave, $profesor['clave'])) {
-                    $_SESSION['usuario'] = [
-                        'id' => $profesor['id_profesor'],
-                        'nombre' => $profesor['nombre_profesor'],
-                        'email' => $profesor['email_profesor']
-                    ];
-                    redireccionar('estudiante', 'index');
-                } else {
-                    $error = 'Credenciales incorrectas';
-                }
-            } else {
-                $error = 'Por favor complete todos los campos';
-            }
-        }
-
-        require_once __DIR__ . '/../views/auth/login.php';
+        //llamar la vista
+        require __DIR__ . '/../views/auth/login.php';
     }
 
-    public function logout() {
+    //método para ingresar
+    public function ingresar():void{
+        //capturar la información
+        $usuario = trim($_POST['txtUsuario'] ?? '');
+        $clave = $_POST['txtClave'] ?? '';
+
+        //vamos a validar 
+        $registro = $usuario !== '' ? $this->usuario->porUsuario($usuario) : null;
+
+        if(!$registro || !password_verify($clave, $registro['clave'])){
+            $error = 'Usuario o contraseña incorrectos.';
+            require __DIR__ . '/../views/auth/login.php';
+            return;
+        }
+
+        session_regenerate_id(true);
+        $_SESSION['usuario_id'] = (int) $registro['id_profesor'];
+        $_SESSION['usuario_nombre'] = $registro['nombre_profesor'];
+        redirigir('estudiantes');
+    }
+
+    //método para salir
+    public function salir():void{
+        $_SESSION = [];
         session_destroy();
-        redireccionar('auth', 'login');
+        redirigir('auth');
     }
 }
+?>

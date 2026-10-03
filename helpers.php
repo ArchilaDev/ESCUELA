@@ -20,7 +20,7 @@
 
     //corta el script si no hay sesiones iniciadas
     function exigir_login(): void{
-        if(empty($_SESSION['id_profesor'])){
+        if(empty($_SESSION['usuario_id'])){
             redirigir('auth', 'index');
         }
     }

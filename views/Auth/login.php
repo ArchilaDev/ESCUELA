@@ -1,30 +1,38 @@
-<?php require_once __DIR__ . '/../layout_header.php'; ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+</head>
+<body class="bg-dark d-flex align-items-center" style="min-height: 100vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-11 col-sm-8 col-md-5 col-lg-4">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h1 class="h4 text-center mb-1">🎓Sistema</h1>
+                        <p class="text-center text-muted mb-4">Gestión Académica</p>
+                        <?php if(!empty($error)): ?>
+                            <div class="alert alert-danger py-2"><?= h($error) ?></div>
+                        <?php endif; ?>
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white text-center">
-                <h4 class="mb-0">Iniciar Sesión</h4>
-            </div>
-            <div class="card-body">
-                <?php if (!empty($error)): ?>
-                    <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
-                <?php endif; ?>
-
-                <form action="index.php?c=auth&a=login" method="POST">
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Correo Electrónico</label>
-                        <input type="email" name="email" id="email" class="form-control" required>
+                        <form action="<?= url('auth', 'ingresar') ?>" method="post">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Usuario</label>
+                                <input type="text" name="txtUsuario" id="" class="form-control" required="required" autofocus="autofocus">
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Contraseña</label>
+                                <input type="password" name="txtClave" id="" class="form-control" required="required" autofocus="autofocus">
+                            </div>
+                            <input type="submit" value="Ingresar" class="btn btn-primary w-100">
+                        </form>
                     </div>
-                    <div class="mb-3">
-                        <label for="clave" class="form-label">Contraseña</label>
-                        <input type="password" name="clave" id="clave" class="form-control" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Ingresar</button>
-                </form>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-
-<?php require_once __DIR__ . '/../layout_footer.php'; ?>
+    </div>    
+</body>
+</html>

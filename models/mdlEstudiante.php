@@ -2,10 +2,10 @@
 require_once __DIR__ . '/../config/conexion.php';
 
 class mdlEstudiante {
-    private $db;
+    private PDO $db;
 
     public function __construct() {
-        $this->db = Conexion::conectar();
+        $this->db = Database::conectar();
     }
 
     public function listar() {

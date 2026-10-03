@@ -1,11 +1,12 @@
 <?php
+require_once __DIR__ . '/../helpers.php';
 require_once __DIR__ . '/../models/mdlEstudiante.php';
 
 class EstudianteController {
     private $modeloEstudiante;
 
     public function __construct() {
-        requerirAutenticacion();
+        exigir_login();
         $this->modeloEstudiante = new mdlEstudiante();
     }
 
@@ -27,7 +28,8 @@ class EstudianteController {
             ];
 
             if ($this->modeloEstudiante->guardar($datos)) {
-                redireccionar('estudiante', 'index');
+                mensaje('Estudiante creado correctamente', 'exito');
+                redirigir('estudiante', 'index');
             } else {
                 $error = 'Error al guardar el estudiante';
             }
@@ -38,12 +40,12 @@ class EstudianteController {
     public function editar() {
         $id = $_GET['id'] ?? null;
         if (!$id) {
-            redireccionar('estudiante', 'index');
+            redirigir('estudiante', 'index');
         }
 
         $estudiante = $this->modeloEstudiante->obtenerPorId($id);
         if (!$estudiante) {
-            redireccionar('estudiante', 'index');
+            redirigir('estudiante', 'index');
         }
 
         $error = '';
@@ -58,7 +60,8 @@ class EstudianteController {
             ];
 
             if ($this->modeloEstudiante->actualizar($id, $datos)) {
-                redireccionar('estudiante', 'index');
+                mensaje('Estudiante actualizado correctamente', 'exito');
+                redirigir('estudiante', 'index');
             } else {
                 $error = 'Error al actualizar el estudiante';
             }
@@ -70,7 +73,8 @@ class EstudianteController {
         $id = $_GET['id'] ?? null;
         if ($id) {
             $this->modeloEstudiante->eliminarLogico($id);
+            mensaje('Estudiante eliminado correctamente', 'exito');
         }
-        redireccionar('estudiante', 'index');
+        redirigir('estudiante', 'index');
     }
 }

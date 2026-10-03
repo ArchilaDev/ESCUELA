@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../helpers.php';
 require_once __DIR__ . '/../models/mdlCurso.php';
 require_once __DIR__ . '/../models/mdlProfesor.php';
 
@@ -7,7 +8,7 @@ class CursoController {
     private $modeloProfesor;
 
     public function __construct() {
-        requerirAutenticacion();
+        exigir_login();
         $this->modeloCurso = new mdlCurso();
         $this->modeloProfesor = new mdlProfesor();
     }
@@ -29,7 +30,8 @@ class CursoController {
             ];
 
             if ($this->modeloCurso->guardar($datos)) {
-                redireccionar('curso', 'index');
+                mensaje('Curso creado correctamente', 'exito');
+                redirigir('curso', 'index');
             } else {
                 $error = 'Error al guardar el curso';
             }
@@ -40,12 +42,12 @@ class CursoController {
     public function editar() {
         $id = $_GET['id'] ?? null;
         if (!$id) {
-            redireccionar('curso', 'index');
+            redirigir('curso', 'index');
         }
 
         $curso = $this->modeloCurso->obtenerPorId($id);
         if (!$curso) {
-            redireccionar('curso', 'index');
+            redirigir('curso', 'index');
         }
 
         $error = '';
@@ -59,7 +61,8 @@ class CursoController {
             ];
 
             if ($this->modeloCurso->actualizar($id, $datos)) {
-                redireccionar('curso', 'index');
+                mensaje('Curso actualizado correctamente', 'exito');
+                redirigir('curso', 'index');
             } else {
                 $error = 'Error al actualizar el curso';
             }
@@ -71,7 +74,8 @@ class CursoController {
         $id = $_GET['id'] ?? null;
         if ($id) {
             $this->modeloCurso->eliminar($id);
+            mensaje('Curso eliminado correctamente', 'exito');
         }
-        redireccionar('curso', 'index');
+        redirigir('curso', 'index');
     }
 }
