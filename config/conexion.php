@@ -11,23 +11,19 @@
             }
 
             //Ajustar los datos para conectar a la base de datos
-            $host = 'localhost';
-            $bs = 'proyecto_php_db';
-            $user = 'root';
-            $pass = '';
+            $host = "localhost";
+            $bs = "prueba";
+            $user = "root";
+            $pass = "";
 
             try{
-                self::$con = new PDO("mysql:host=$host;$dbname=$bd;charset = utf8mb4", $user, $pass); //Se accede a la propiedad statica de la clasee con :: y --> es para acceder al metodo que esta en la clase
-
+                self::$con = new PDO("mysql:host=$host;dbname=$bs;charset=utf8mb4", $user, $pass);
                 self::$con -> setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            }catch (PDOExeption $e){
-                exit('No se pudo conectar a la base de datos'. $e->getMessage());
-
+            }catch(PDOException $e){
+                exit("No se pudo conectar a la base de datos: " . $e -> getMessage());
             }
+
             return self::$con;
         }
-
     }
-
 ?>
