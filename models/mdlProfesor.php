@@ -9,7 +9,7 @@ class mdlProfesor {
     }
 
     public function porUsuario(string $usuario) {
-        // Introduzca el ID de usuario para que $SESSION funcione fuera
+      // Introduzca el ID de usuario para que $SESSION funcione fuera
         $sql = "SELECT id_profesor, nombre_profesor, apellido_profesor, clave FROM profesor WHERE usuario = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$usuario]);

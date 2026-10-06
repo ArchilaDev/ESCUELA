@@ -6,7 +6,7 @@
         return htmlspecialchars($texto ?? '', ENT_QUOTES, 'UTF-8');
     }
 
-    //Contruye una URL interna, ej: url('mascotas','formulario', ['id' => 3])
+    //Contruye una URL interna, ej: url('cursos','formulario', ['id' => 3])
     function url(string $controlador, string $accion = 'index', array $extra = []): string{
         $partes = array_merge(['c' => $controlador, 'a' => $accion], $extra);
         return 'index.php?' . http_build_query($partes);

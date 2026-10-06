@@ -11,13 +11,13 @@
 
     //Alias de URL => nombre de la clase controladora
     $controladores =[
+        'cursos' => 'CursoController',
         'estudiantes' => 'EstudianteController',
-        'cursos'      => 'CursoController',
-        'auth'        => 'AuthController',
+        'auth' => 'AuthController',
     ];
 
     //llamado a los controladores
-    $controlador = $_GET['c'] ?? 'estudiantes';
+    $controlador = $_GET['c'] ?? 'cursos';
     $accion = $_GET['a'] ?? 'index';
 
     //validamos comunicaciones

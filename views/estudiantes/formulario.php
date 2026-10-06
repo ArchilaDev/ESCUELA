@@ -1,36 +1,50 @@
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-header bg-secondary text-white">
-                <h4><?= isset($estudiante) ? 'Editar Estudiante' : 'Nuevo Estudiante' ?></h4>
-            </div>
-            <div class="card-body">
-                <form action="<?= url('estudiantes', 'guardar') ?>" method="POST">
-                    <?php if (isset($estudiante)): ?>
-                        <input type="hidden" name="id_estudiante" value="<?= h($estudiante['id_estudiante']) ?>">
-                    <?php endif; ?>
-
-                    <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" name="nombre" id="nombre" class="form-control" value="<?= h($estudiante['nombre'] ?? '') ?>" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="apellido" class="form-label">Apellido</label>
-                        <input type="text" name="apellido" id="apellido" class="form-control" value="<?= h($estudiante['apellido'] ?? '') ?>" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Correo Electrónico</label>
-                        <input type="email" name="email" id="email" class="form-control" value="<?= h($estudiante['email'] ?? '') ?>" required>
-                    </div>
-
-                    <button type="submit" class="btn btn-success">Guardar</button>
-                    <a href="<?= url('estudiantes') ?>" class="btn btn-secondary">Cancelar</a>
-                </form>
-            </div>
-        </div>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0"><?= !empty($item['id_estudiante']) ? 'Editar estudiante' : 'Nuevo estudiante' ?></h1>
+    <a href="<?= url('estudiantes') ?>" class="btn btn-outline-secondary btn-sm">&lArr; Volver</a>
 </div>
 
-<?php require_once __DIR__ . '/../layout_footer.php'; ?>
+<div class="card">
+    <div class="card-body">
+        <form action="<?= url('estudiantes', 'guardar') ?>" method="post">
+            <input type="hidden" name="id_estudiante" value="<?= (int) ($item['id_estudiante'] ?? 0) ?>">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" name="nombre_estudiante" class="form-control" maxlength="70" required value="<?= h($item['nombre_estudiante'] ?? '') ?>">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Apellido</label>
+                    <input type="text" name="apellido_estudiante" class="form-control" maxlength="70" required value="<?= h($item['apellido_estudiante'] ?? '') ?>">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" name="email_estudiante" class="form-control" maxlength="80" required value="<?= h($item['email_estudiante'] ?? '') ?>">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Edad</label>
+                    <input type="number" name="edad_estudiante" class="form-control" min="1" max="120" value="<?= h($item['edad_estudiante'] ?? '') ?>">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">País</label>
+                    <input type="text" name="pais_estudiante" class="form-control" maxlength="50" value="<?= h($item['pais_estudiante'] ?? '') ?>">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Idioma</label>
+                    <input type="text" name="idioma_estudiante" class="form-control" maxlength="50" value="<?= h($item['idioma_estudiante'] ?? '') ?>">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Guardar Estudiante</button>
+        </form>
+    </div>
+</div>

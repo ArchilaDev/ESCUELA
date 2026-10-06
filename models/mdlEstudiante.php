@@ -1,60 +1,133 @@
 <?php
+// Llamar la conexión
 require_once __DIR__ . '/../config/conexion.php';
 
-class mdlEstudiante {
+class mdlEstudiante
+{
     private PDO $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = Database::conectar();
     }
 
-    public function listar() {
-        $sql = "SELECT * FROM estudiante WHERE activo = 1 ORDER BY id_estudiante DESC";
+    // Método ver datos, listar
+    public function listar(string $buscar = '', string $estado = ''): array
+    {
+        $sql = "SELECT e.*, (SELECT COUNT(*) FROM curso_estudiante ce WHERE ce.id_estudiante = e.id_estudiante) AS total_cursos 
+                FROM estudiante e 
+                WHERE 1 = 1";
+
+        $params = [];
+
+        // Filtración
+        if ($buscar !== '') {
+            $sql .= " AND (e.nombre_estudiante LIKE ? OR e.apellido_estudiante LIKE ? OR e.email_estudiante LIKE ?)";
+            $comodin = '%' . $buscar . '%';
+            array_push($params, $comodin, $comodin, $comodin);
+        }
+
+        if ($estado === '1' || $estado === '0') {
+            $sql .= ' AND e.activo = ?';
+            $params[] = $estado;
+        }
+
+        // Ordenar resultados
+        $sql .= ' ORDER BY e.activo DESC, e.nombre_estudiante ASC';
+
         $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
     }
 
-    public function obtenerPorId($id) {
-        $sql = "SELECT * FROM estudiante WHERE id_estudiante = :id AND activo = 1";
+    // Búsqueda por id
+    public function porId(int $id): ?array
+    {
+        $sql = "SELECT * FROM estudiante WHERE id_estudiante = ?";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->execute([$id]);
+        return $stmt->fetch() ?: null;
     }
 
-    public function guardar($datos) {
+    // Lista corta para desplegables
+    public function opciones(): array
+    {
+        $sql = "SELECT id_estudiante, nombre_estudiante, apellido_estudiante, activo FROM estudiante ORDER BY activo DESC, nombre_estudiante ASC";
+        return $this->db->query($sql)->fetchAll();
+    }
+
+    // Búsqueda por email ignorando el id actual
+    public function emailExiste(string $email, int $ignorarId = 0): bool
+    {
+        $sql = "SELECT id_estudiante FROM estudiante WHERE email_estudiante = ? AND id_estudiante <> ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$email, $ignorarId]);
+        return (bool) $stmt->fetch();
+    }
+
+    // Método para registrar o crear datos
+    public function crear(array $d): int
+    {
         $sql = "INSERT INTO estudiante (nombre_estudiante, apellido_estudiante, email_estudiante, edad_estudiante, pais_estudiante, idioma_estudiante, activo) 
-                VALUES (:nombre, :apellido, :email, :edad, :pais, :idioma, 1)";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':nombre', $datos['nombre_estudiante'], PDO::PARAM_STR);
-        $stmt->bindParam(':apellido', $datos['apellido_estudiante'], PDO::PARAM_STR);
-        $stmt->bindParam(':email', $datos['email_estudiante'], PDO::PARAM_STR);
-        $stmt->bindParam(':edad', $datos['edad_estudiante'], PDO::PARAM_INT);
-        $stmt->bindParam(':pais', $datos['pais_estudiante'], PDO::PARAM_STR);
-        $stmt->bindParam(':idioma', $datos['idioma_estudiante'], PDO::PARAM_STR);
-        return $stmt->execute();
+                VALUES (?,?,?,?,?,?,?)";
+        $this->db->prepare($sql)->execute([
+            $d['nombre_estudiante'],
+            $d['apellido_estudiante'],
+            $d['email_estudiante'],
+            $d['edad_estudiante'] ?: null,
+            $d['pais_estudiante'] ?: null,
+            $d['idioma_estudiante'] ?: null,
+            $d['activo'] ?? 1
+        ]);
+        return (int) $this->db->lastInsertId();
     }
 
-    public function actualizar($id, $datos) {
+    // Método para actualizar
+    public function actualizar(int $id, array $d): bool
+    {
         $sql = "UPDATE estudiante 
-                SET nombre_estudiante = :nombre, apellido_estudiante = :apellido, email_estudiante = :email, edad_estudiante = :edad, pais_estudiante = :pais, idioma_estudiante = :idioma 
-                WHERE id_estudiante = :id AND activo = 1";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':nombre', $datos['nombre_estudiante'], PDO::PARAM_STR);
-        $stmt->bindParam(':apellido', $datos['apellido_estudiante'], PDO::PARAM_STR);
-        $stmt->bindParam(':email', $datos['email_estudiante'], PDO::PARAM_STR);
-        $stmt->bindParam(':edad', $datos['edad_estudiante'], PDO::PARAM_INT);
-        $stmt->bindParam(':pais', $datos['pais_estudiante'], PDO::PARAM_STR);
-        $stmt->bindParam(':idioma', $datos['idioma_estudiante'], PDO::PARAM_STR);
-        return $stmt->execute();
+                SET nombre_estudiante = ?, apellido_estudiante = ?, email_estudiante = ?, edad_estudiante = ?, pais_estudiante = ?, idioma_estudiante = ? 
+                WHERE id_estudiante = ?";
+        return $this->db->prepare($sql)->execute([
+            $d['nombre_estudiante'],
+            $d['apellido_estudiante'],
+            $d['email_estudiante'],
+            $d['edad_estudiante'] ?: null,
+            $d['pais_estudiante'] ?: null,
+            $d['idioma_estudiante'] ?: null,
+            $id
+        ]);
     }
 
-    public function eliminarLogico($id) {
-        $sql = "UPDATE estudiante SET activo = 0 WHERE id_estudiante = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
+    // Desvincula las inscripciones asociadas al estudiante en la tabla pivote
+    public function cambiarEstadoCursos(int $estudianteId): bool
+    {
+        $sql = "DELETE FROM curso_estudiante WHERE id_estudiante = ?";
+        return $this->db->prepare($sql)->execute([$estudianteId]);
     }
+
+    // Activa o desactiva la cuenta del estudiante (Baja lógica)
+    public function cambiarEstado(int $id, int $activo): bool
+    {
+        $sql = "UPDATE estudiante SET activo = ? WHERE id_estudiante = ?";
+        return $this->db->prepare($sql)->execute([$activo, $id]);
+    }
+
+    // Método para eliminar físicamente
+    public function eliminar(int $id): bool
+    {
+        $sql = "DELETE FROM estudiante WHERE id_estudiante = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->rowCount() > 0;
+    }
+
+    // Cambia el estado (1 = activo, 0 = inactivo)
+    /*
+public function cambiarEstado(int $id, int $activo): bool
+{
+    $sql = "UPDATE estudiante SET activo = ? WHERE id_estudiante = ?";
+    return $this->db->prepare($sql)->execute([$activo, $id]);
+}
+    */
 }
