@@ -11,10 +11,10 @@ class mdlEstudiante
         $this->db = Database::conectar();
     }
 
-    // Método ver datos, listar
+    // Método ver datos, listar (Contando los cursos directamente desde la tabla curso)
     public function listar(string $buscar = '', string $estado = ''): array
     {
-        $sql = "SELECT e.*, (SELECT COUNT(*) FROM curso_estudiante ce WHERE ce.id_estudiante = e.id_estudiante) AS total_cursos 
+        $sql = "SELECT e.*, (SELECT COUNT(*) FROM curso c WHERE c.id_estudiante = e.id_estudiante) AS total_cursos 
                 FROM estudiante e 
                 WHERE 1 = 1";
 
@@ -92,21 +92,21 @@ class mdlEstudiante
             $d['nombre_estudiante'],
             $d['apellido_estudiante'],
             $d['email_estudiante'],
-            $d['edad_estudiante'] ?: null,
-            $d['pais_estudiante'] ?: null,
-            $d['idioma_estudiante'] ?: null,
+            $d['edad_estudiante'],
+            $d['pais_estudiante'],
+            $d['idioma_estudiante'],
             $id
         ]);
     }
 
-    // Desvincula las inscripciones asociadas al estudiante en la tabla pivote
-    public function cambiarEstadoCursos(int $estudianteId): bool
+    // Cambiar estado o inactivar cursos del estudiante si se desactiva
+    public function cambiarEstadoCursos(int $estudianteId, int $activo): bool
     {
-        $sql = "DELETE FROM curso_estudiante WHERE id_estudiante = ?";
-        return $this->db->prepare($sql)->execute([$estudianteId]);
+        $sql = "UPDATE curso SET activo = ? WHERE id_estudiante = ?";
+        return $this->db->prepare($sql)->execute([$activo, $estudianteId]);
     }
 
-    // Activa o desactiva la cuenta del estudiante (Baja lógica)
+    // Activa o desactiva la cuenta del estudiante
     public function cambiarEstado(int $id, int $activo): bool
     {
         $sql = "UPDATE estudiante SET activo = ? WHERE id_estudiante = ?";
@@ -121,13 +121,4 @@ class mdlEstudiante
         $stmt->execute([$id]);
         return $stmt->rowCount() > 0;
     }
-
-    // Cambia el estado (1 = activo, 0 = inactivo)
-    /*
-public function cambiarEstado(int $id, int $activo): bool
-{
-    $sql = "UPDATE estudiante SET activo = ? WHERE id_estudiante = ?";
-    return $this->db->prepare($sql)->execute([$activo, $id]);
-}
-    */
 }
