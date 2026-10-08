@@ -74,7 +74,7 @@ class EstudianteController
         }
         
         if ($d['email_estudiante'] !== '' && !filter_var($d['email_estudiante'], FILTER_VALIDATE_EMAIL)) {
-            $errores[] = 'El email introducido no es válido.';
+            $errores[] = 'El email introducido no es válido.'; //Comprueba si este valor tiene un formato válido de correo electrónico.
         }
 
         if ($d['email_estudiante'] !== '' && $this->estudiante->emailExiste($d['email_estudiante'], $id)) {
@@ -99,7 +99,7 @@ class EstudianteController
 // Cambia el estado (1 = activo, 0 = inactivo)
     public function estado(): void
     {
-        // Se corrige 'id_estudiante' a 'id' para coincidir con la vista
+        // Se corrige 'id_estudiant'
         $id = (int) ($_POST['id'] ?? 0);
         $registro = $this->estudiante->porId($id);
 
@@ -129,7 +129,7 @@ class EstudianteController
             //cambio de activo estudiante por negocio
             
                 $this->estudiante->cambiarEstado($id, $nuevoEstado);
-                mensaje($nuevoEstado ? 'El estudiante vuelve a estar activo.' : 'La estudiante quedó inactiva.');
+                mensaje($nuevoEstado ? 'El estudiante vuelve a estar activo.' : 'El estudiante quedó inactivo.');
             }
         
         redirigir('estudiantes');

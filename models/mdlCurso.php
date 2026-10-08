@@ -53,7 +53,7 @@ class mdlCurso {
         $sql = "INSERT INTO curso( nombre_curso, genero_curso, precio_curso, descripcion_curso,id_estudiante) 
                 VALUES (?, ?, ?, ?, ?)";
         $this->db->prepare($sql)->execute($this->parametros($d));
-        return (int) $this->db->lastInsertId();
+        return (int) $this->db->lastInsertId(); //Es decir que lo va a insertar en la ultima fila
     }
 
     public function actualizar(int $id, array $d): bool {
@@ -61,7 +61,7 @@ class mdlCurso {
                 SET nombre_curso = ?, genero_curso = ?, precio_curso = ?, descripcion_curso = ?,
                 id_estudiante = ?
                 WHERE id_curso = ?";
-        return $this->db->prepare($sql)->execute([...$this->parametros($d), $id]);
+        return $this->db->prepare($sql)->execute([...$this->parametros($d), $id]); 
     }
     
     //no funcionara porque borre estado..en la bse de datos
@@ -79,7 +79,7 @@ class mdlCurso {
         $sql = "DELETE FROM curso WHERE id_curso = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
-        return $stmt->rowCount() > 0;
+        return $stmt->rowCount() > 0; //cuantas filas fueron afectadas (rowcount)
     }
 
     private function parametros(array $d): array {

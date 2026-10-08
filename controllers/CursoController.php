@@ -16,7 +16,7 @@ class CursoController
         $this->curso = new mdlCurso();
         $this->estudiante = new mdlEstudiante();
     }
-    //muestra la lista principal de mascotas con opciones de busqueda y filtrado
+    //muestra la lista principal de cursos con opciones de busqueda y filtrado
     //GET index.php?c=cursos
    public function index(): void
     {
@@ -34,7 +34,7 @@ class CursoController
         require __DIR__ . '/../views/layout_footer.php';
     }
 
-    // GET index.php?c=mascotas&a=formulario[$id=5]
+    // GET index.php?c=cursos&a=formulario[$id=5]
     /*
     carga el formulario para crear un nuevo curso o editar uno existente.
     Ruta tipica: index.php?c=cursos&a=formulario&id=X
@@ -128,7 +128,7 @@ class CursoController
 
     
     /*
-    Actualizacion rapida del estado clinico de la mascota via POST
+    Actualizacion rapida del estado del curso via POST
     */
     public function estado(): void
     {

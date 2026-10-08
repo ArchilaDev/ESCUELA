@@ -49,7 +49,7 @@ class mdlEstudiante
         return $stmt->fetch() ?: null;
     }
 
-    // Lista corta para desplegables
+    // Lista corta para desplegables, cuando lo este buscando
     public function opciones(): array
     {
         $sql = "SELECT id_estudiante, nombre_estudiante, apellido_estudiante, activo FROM estudiante ORDER BY activo DESC, nombre_estudiante ASC";
