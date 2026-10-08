@@ -4,6 +4,7 @@
 </div>
 
 <form action="<?= url('estudiantes') ?>" method="get" class="row g-2 mb-3">
+    <input type="hidden" name="c" value="estudiantes">
     <div class="col-sm-5 col-md-4">
         <input type="text" name="buscar" class="form-control" placeholder="Buscar por nombre de estudiante o email " value="<?= h($buscar) ?>">
     </div>
