@@ -28,7 +28,7 @@ class mdlCurso {
 
         
         if($activo === '1' || $activo === '0'){
-            $sql .= 'AND c.activo = ?';
+            $sql .= ' AND c.activo = ?';
             $params[] = $activo; 
         }
         $sql .= ' ORDER BY c.activo DESC, c.id_curso DESC';
@@ -64,12 +64,12 @@ class mdlCurso {
         return $this->db->prepare($sql)->execute([...$this->parametros($d), $id]);
     }
     
-    /*
+    //no funcionara porque borre estado..en la bse de datos
     public function cambiarEstado(int $id,string $estado):bool{
         $sql = 'UPDATE curso SET estado =  ? WHERE id_curso = ?';
         return $this->db->prepare($sql)->execute([$estado, $id]);
     }
-        */
+        
 
     public function cambiarActivo(int $id, int $activo): bool{
         $sql = "UPDATE curso SET activo = ? WHERE id_curso = ?";

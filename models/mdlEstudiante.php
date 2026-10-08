@@ -12,7 +12,7 @@ class mdlEstudiante
     }
 
     // Método ver datos, listar (Contando los cursos directamente desde la tabla curso)
-    public function listar(string $buscar = '', string $estado = ''): array
+    public function listar(string $buscar = '', string $estado = '',string $activo = ''): array
     {
         $sql = "SELECT e.*, (SELECT COUNT(*) FROM curso c WHERE c.id_estudiante = e.id_estudiante) AS total_cursos 
                 FROM estudiante e 
@@ -95,14 +95,14 @@ class mdlEstudiante
             $d['edad_estudiante'],
             $d['pais_estudiante'],
             $d['idioma_estudiante'],
-            $id
+            $id //tenemos otro parametro
         ]);
     }
 
     // Cambiar estado o inactivar cursos del estudiante si se desactiva
-    public function cambiarEstadoCursos(int $estudianteId, int $activo): bool
+    public function cambiarEstadoEstudiante(int $estudianteId, int $activo): bool
     {
-        $sql = "UPDATE curso SET activo = ? WHERE id_estudiante = ?";
+        $sql = "UPDATE estudiante SET activo = ? WHERE id_estudiante = ?";
         return $this->db->prepare($sql)->execute([$activo, $estudianteId]);
     }
 

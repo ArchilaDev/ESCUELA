@@ -61,11 +61,7 @@
                     <a href="<?= url('cursos', 'formulario', ['id_curso' => $c['id_curso']]) ?>"
                         class="btn btn-sm btn-outline-primary">Editar</a>
 
-                    <form action="<?= url('cursos', 'activo') ?>" method="post" class="d-inline">
-                        <input type="hidden" name="id_curso" value="<?= $c['id_curso'] ?>">
-                        <button type="submit"
-                            class="btn btn-sm btn-outline-secondary"><?= $c['activo'] ? 'Desactivar' : 'Activar' ?></button>
-                    </form>
+                    
 
                     <form action="<?= url('cursos', 'eliminar') ?>" method="post" class="d-inline"
                         onsubmit="return confirm('¿Eliminar la ficha de <?= h($c['nombre_curso'])?>?');">

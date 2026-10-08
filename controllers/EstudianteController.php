@@ -15,8 +15,10 @@ class EstudianteController
     public function index(): void
     {
         $buscar = trim($_GET['buscar'] ?? '');
+        //Crear la vairable activo solo para estudiante
+        $activo = $_GET['activo'] ?? '';
         // Listado de estudiantes
-        $estudiantes = $this->estudiante->listar($buscar);
+        $estudiantes = $this->estudiante->listar($buscar, $activo);
 
         require __DIR__ . '/../views/layout_header.php';
         require __DIR__ . '/../views/estudiantes/listado.php';
@@ -36,7 +38,8 @@ class EstudianteController
             'email_estudiante'    => '', 
             'edad_estudiante'     => '', 
             'pais_estudiante'     => '',
-            'idioma_estudiante'   => ''
+            'idioma_estudiante'   => '',
+             //porque mandamos mas parametros
         ];
 
         if ($id > 0) {
@@ -102,15 +105,36 @@ class EstudianteController
 
         if ($registro) {
             $nuevoEstado = $registro['activo'] ? 0 : 1;
+            $nombre = $registro['nombre_estudiante'];
             // Corregido: Usar $this->estudiante
             $this->estudiante->cambiarEstado($id, $nuevoEstado);
-            $this->estudiante->cambiarEstadoCursos($id, $nuevoEstado);
+            $this->estudiante->cambiarEstadoEstudiante($id, $nuevoEstado);
             
             mensaje($nombre . ($nuevoEstado ? ' vuelve a estar activo.' : ' quedó inactivo (junto con sus cursos).'));
         }
 
         redirigir('estudiantes');
     }
+
+    //Crear funcion activa
+    public function activo(): void
+    {
+        $id = (int) ($_POST['id'] ?? 0);
+        $registro = $this->estudiante->porId($id);
+
+        if ($registro) {
+            //Invierte el estado actual (1 pasa a 0, 0 pasa a 1)
+            $nuevoEstado = $registro['activo'] ? 0 : 1;
+            $nombre = $registro['nombre_estudiante'];
+            //cambio de activo estudiante por negocio
+            
+                $this->estudiante->cambiarEstado($id, $nuevoEstado);
+                mensaje($nuevoEstado ? 'El estudiante vuelve a estar activo.' : 'La estudiante quedó inactiva.');
+            }
+        
+        redirigir('estudiantes');
+    }
+
 
     // POST index.php?c=estudiantes&a=eliminar
     public function eliminar(): void
